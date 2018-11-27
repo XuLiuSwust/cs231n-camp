@@ -64,14 +64,15 @@ class KNearestNeighbor(object):
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train))
     for i in range(num_test):
-      for j in range(num_train):
+        for j in range(num_train):
         #####################################################################
         # TODO:                                                             #
         # Compute the l2 distance between the ith test point and the jth    #
         # training point, and store the result in dists[i, j]. You should   #
         # not use a loop over dimension.                                    #
         #####################################################################
-        pass
+        #pass
+            dists[i,j] = np.sqrt(np.sum((X[i]-self.X_train[j])**2))
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
@@ -93,7 +94,8 @@ class KNearestNeighbor(object):
       # Compute the l2 distance between the ith test point and all training #
       # points, and store the result in dists[i, :].                        #
       #######################################################################
-      pass
+      #pass
+        dists[i,:] = np.sqrt(np.sum((X[i] - self.X_train)**2,axis = 1))
       #######################################################################
       #                         END OF YOUR CODE                            #
       #######################################################################
@@ -121,7 +123,11 @@ class KNearestNeighbor(object):
     # HINT: Try to formulate the l2 distance using matrix multiplication    #
     #       and two broadcast sums.                                         #
     #########################################################################
-    pass
+    #pass
+    test_sum = np.sum(np.square(X),axis=1,keepdims=True) 
+    train_sum=np.sum(np.square(self.X_train),axis=1) 
+    test_mul_train=np.matmul(X,self.X_train.T) 
+    dists = test_sum + train_sum - 2*test_mul_train 
     #########################################################################
     #                         END OF YOUR CODE                              #
     #########################################################################
@@ -145,7 +151,7 @@ class KNearestNeighbor(object):
     for i in range(num_test):
       # A list of length k storing the labels of the k nearest neighbors to
       # the ith test point.
-      closest_y = []
+        closest_y = []
       #########################################################################
       # TODO:                                                                 #
       # Use the distance matrix to find the k nearest neighbors of the ith    #
@@ -153,7 +159,13 @@ class KNearestNeighbor(object):
       # neighbors. Store these labels in closest_y.                           #
       # Hint: Look up the function numpy.argsort.                             #
       #########################################################################
-      pass
+        idx = np.argsort(dists[i,:],-1)
+        closest_y = self.y_train[idx[:k]]
+        closest_set = set(closest_y)#find max label
+        for idx,item in enumerate(closest_set):
+            y_pred[i]= item
+            if idx == 0:
+                break
       #########################################################################
       # TODO:                                                                 #
       # Now that you have found the labels of the k nearest neighbors, you    #
@@ -161,7 +173,7 @@ class KNearestNeighbor(object):
       # Store this label in y_pred[i]. Break ties by choosing the smaller     #
       # label.                                                                #
       #########################################################################
-      pass
+      #pass
       #########################################################################
       #                           END OF YOUR CODE                            # 
       #########################################################################
